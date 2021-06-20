@@ -23,8 +23,8 @@ class CustomFilters:
 
     authorized_chat = _AuthorizedChat()
     
-    class _SudoUser(BaseFilter):
-        def filter(self,message):
+    class _SudoUser(MessageFilter):
+        def filter(self, message):
             return bool(message.from_user.id in SUDO_USERS)
 
     sudo_user = _SudoUser()
