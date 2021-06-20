@@ -137,9 +137,15 @@ addsudo_handler = CommandHandler(command=BotCommands.AddSudoCommand, callback=ad
                                     filters=CustomFilters.owner_filter)
 removesudo_handler = CommandHandler(command=BotCommands.RmSudoCommand, callback=removeSudo,
                                     filters=CustomFilters.owner_filter)
+cancel_mirror_handler = CommandHandler(BotCommands.CancelMirror, cancel_mirror,
+                                       filters=(CustomFilters.authorized_chat | CustomFilters.authorized_user) & CustomFilters.mirror_owner_filter, run_async=True)
+cancel_all_handler = CommandHandler(BotCommands.CancelAllCommand, cancel_all,
+                                    filters=CustomFilters.owner_filter, run_async=True & CustomFilters.sudo_user, run_async=True)
 
 dispatcher.add_handler(send_auth_handler)
 dispatcher.add_handler(authorize_handler)
 dispatcher.add_handler(unauthorize_handler)
 dispatcher.add_handler(addsudo_handler)
 dispatcher.add_handler(removesudo_handler)
+dispatcher.add_handler(cancel_mirror_handler)
+dispatcher.add_handler(cancel_all_handler)
