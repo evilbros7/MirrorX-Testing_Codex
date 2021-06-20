@@ -104,7 +104,7 @@ except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
     
-    try:
+try:
     conn = psycopg2.connect(DB_URI)
     cur = conn.cursor()
     sql = "SELECT * from users;"
