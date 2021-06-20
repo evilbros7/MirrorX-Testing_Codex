@@ -128,11 +128,11 @@ def sendAuthChats(update,context):
 
 
 send_auth_handler = CommandHandler(command=BotCommands.AuthorizedUsersCommand, callback=sendAuthChats,
-                                    filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
+                                    filters=CustomFilters.owner_filter)
 authorize_handler = CommandHandler(command=BotCommands.AuthorizeCommand, callback=authorize,
-                                    filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
+                                    filters=CustomFilters.owner_filter)
 unauthorize_handler = CommandHandler(command=BotCommands.UnAuthorizeCommand, callback=unauthorize,
-                                    filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
+                                    filters=CustomFilters.owner_filter)
 addsudo_handler = CommandHandler(command=BotCommands.AddSudoCommand, callback=addSudo,
                                     filters=CustomFilters.owner_filter)
 removesudo_handler = CommandHandler(command=BotCommands.RmSudoCommand, callback=removeSudo,
