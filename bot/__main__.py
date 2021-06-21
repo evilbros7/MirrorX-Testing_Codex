@@ -131,7 +131,7 @@ def main():
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
     updater.start_polling()
-    bot.send_message(-1001377203451, "Bot Restarted!")
+    bot.send_message(-1001372363145, "Bot Restarted!")
     LOGGER.info("Bot Started!")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
 
