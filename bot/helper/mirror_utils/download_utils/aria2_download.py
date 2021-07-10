@@ -22,20 +22,20 @@ class AriaDownloadHelper(DownloadHelper):
         download = api.get_download(gid)
         self.name = download.name
         sname = download.name
+        gdrive = GoogleDriveHelper(None)
+        smsg, button = gdrive.drive_list(sname)
         if STOP_DUPLICATE_MIRROR:
-          if dl.getListener().isTar == True:
-            sname = sname + ".tar"
-          if dl.getListener().extract == True:
-            smsg = None
-          else:
-            gdrive = GoogleDriveHelper(None)
-            smsg, button = gdrive.drive_list(sname)
-          if smsg:
-              dl.getListener().onDownloadError(f'😡😡File is already available in drive. You should have search before mirror any file. This download has been stopped.\n\n')
-              sendMarkup(" Here are the search results:👇👇", dl.getListener().bot, dl.getListener().update, button)
-              aria2.remove([download])
-          return
+            if smsg:
+                dl.getListener().onDownloadError(f'File is already available in drive.\n\n')
+                print(dl.getListener())
+                if button:
+                    sendMarkup("Here are the search results:👇\n", dl.getListener().bot, dl.getListener().update, button)
+                else:
+                    sendMessage("Here are the search results:👇\n" + smsg, dl.getListener().bot, dl.getListener().update)
+                aria2.remove([download])
+            return
         update_all_messages()
+
     def __onDownloadComplete(self, api: API, gid):
         LOGGER.info(f"onDownloadComplete: {gid}")
         dl = getDownloadByGid(gid)
@@ -50,7 +50,8 @@ class AriaDownloadHelper(DownloadHelper):
             update_all_messages()
             LOGGER.info(f'Changed gid from {gid} to {new_gid}')
         else:
-            if dl: threading.Thread(target=dl.getListener().onDownloadComplete).start()
+            if dl:
+                threading.Thread(target=dl.getListener().onDownloadComplete).start()
 
     @new_thread
     def __onDownloadPause(self, api, gid):
@@ -62,11 +63,11 @@ class AriaDownloadHelper(DownloadHelper):
     def __onDownloadStopped(self, api, gid):
         LOGGER.info(f"onDownloadStop: {gid}")
         dl = getDownloadByGid(gid)
-        if dl: dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 𝐇𝐚𝐬 𝐍𝐨 𝐒𝐞𝐞𝐝𝐬, ⚠️ 𝐃𝐞𝐚𝐝 𝐓𝐨𝐫𝐫𝐞𝐧𝐭')
+        if dl: dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 𝐇𝐚𝐬 𝐍𝐨 𝐒𝐞𝐞𝐝𝐬, ⚠️ 𝐃𝐞𝐚𝐝 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 !')
 
     @new_thread
     def __onDownloadError(self, api, gid):
-        sleep(0.5) #sleep for split second to ensure proper dl gid update from onDownloadComplete
+        sleep(0.5)  # sleep for split second to ensure proper dl gid update from onDownloadComplete
         LOGGER.info(f"onDownloadError: {gid}")
         dl = getDownloadByGid(gid)
         download = api.get_download(gid)
@@ -81,17 +82,14 @@ class AriaDownloadHelper(DownloadHelper):
                                       on_download_stop=self.__onDownloadStopped,
                                       on_download_complete=self.__onDownloadComplete)
 
-
     def add_download(self, link: str, path, listener, filename):
         if is_magnet(link):
             download = aria2.add_magnet(link, {'dir': path, 'out': filename})
         else:
             download = aria2.add_uris([link], {'dir': path, 'out': filename})
-        if download.error_message: #no need to proceed further at this point
+        if download.error_message:  # no need to proceed further at this point
             listener.onDownloadError(download.error_message)
-            return 
+            return
         with download_dict_lock:
-            download_dict[listener.uid] = AriaDownloadStatus(download.gid,listener)
+            download_dict[listener.uid] = AriaDownloadStatus(download.gid, listener)
             LOGGER.info(f"Started: {download.gid} DIR:{download.dir} ")
-
-
