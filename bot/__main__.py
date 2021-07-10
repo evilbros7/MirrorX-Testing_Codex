@@ -3,10 +3,13 @@ import shutil, psutil
 import signal
 
 from sys import executable
+from datetime import datetime
+import pytz
 import time
 
+from telegram.error import BadRequest, Unauthorized
 from telegram.ext import CommandHandler
-from bot import bot, dispatcher, updater, botStartTime
+from bot import bot, dispatcher, updater, botStartTime, LOG_GROUP
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
@@ -112,6 +115,18 @@ def main():
             chat_id, msg_id = map(int, f)
         bot.edit_message_text("Restarted successfully!", chat_id, msg_id)
         os.remove(".restartmsg")
+    if LOG_GROUP is not None and isinstance(LOG_GROUP, str):
+
+        try:
+            now=datetime.now(pytz.timezone('Asia/Kolkata'))
+            current = now.strftime('%Y/%m/%d %I:%M%P')
+            dispatcher.bot.sendMessage(f"{LOG_GROUP}", f"Bot Restarted at {current}")
+        except Unauthorized:
+            LOGGER.warning(
+                "Bot isnt able to send message to support_chat, go and check!"
+            )
+        except BadRequest as e:
+            LOGGER.warning(e.message)
 
     start_handler = CommandHandler(BotCommands.StartCommand, start,
                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
