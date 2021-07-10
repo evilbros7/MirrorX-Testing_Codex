@@ -119,8 +119,8 @@ def main():
 
         try:
             now=datetime.now(pytz.timezone('Asia/Kolkata'))
-            current = now.strftime('%Y/%m/%d %I:%M%P')
-            dispatcher.bot.sendMessage(f"{LOG_GROUP}", f"Bot Restarted at {current}")
+            current = now.strftime('%I:%M%P')
+            dispatcher.bot.sendMessage(f"{LOG_GROUP}", f"Bot Restarted at {current} #Restarted")
         except Unauthorized:
             LOGGER.warning(
                 "Bot isnt able to send message to support_chat, go and check!"
