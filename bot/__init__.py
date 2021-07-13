@@ -104,7 +104,7 @@ try:
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
-    
+
 try:
     conn = psycopg2.connect(DB_URI)
     cur = conn.cursor()
@@ -161,6 +161,15 @@ try:
         INDEX_URL = None
 except KeyError:
     INDEX_URL = None
+try:
+    FSUB_CHANNEL_ID = getConfig('FSUB_CHANNEL_ID')
+    FSUB_CHANNEL_LINK: str = getConfig('FSUB_CHANNEL_LINK').replace("t.me/", "@")
+    FSUB_CHANNEL_ID = int(FSUB_CHANNEL_ID)
+    FSUB_ENABLED = True
+except KeyError:
+    FSUB_CHANNEL_ID = None
+    FSUB_ENABLED = False
+    FSUB_CHANNEL_LINK = None
 try:
     BUTTON_THREE_NAME = getConfig('BUTTON_THREE_NAME')
     BUTTON_THREE_URL = getConfig('BUTTON_THREE_URL')
