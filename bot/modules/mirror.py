@@ -2,7 +2,7 @@ import requests
 from telegram.ext import CommandHandler
 from telegram import InlineKeyboardMarkup
 
-from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS
+from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK
 from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval
@@ -214,6 +214,26 @@ def _mirror(bot, update, isTar=False, extract=False):
     mesg = update.message.text.split('\n')
     message_args = mesg[0].split(' ')
     name_args = mesg[0].split('|')
+    
+    user_id = update.effective_user.id
+
+    user_is_normal = True
+    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
+        user_is_normal = False
+
+    if user_is_normal:
+        print("Normal User trying to access")
+        if FSUB_ENABLED is True:
+            member_sub_status = bot.get_chat_member(
+                chat_id=FSUB_CHANNEL_ID,
+                user_id=user_id
+            )
+            if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
+                update.effective_message.reply_markdown(
+                    f"*In order to use this bot, you have to be the member of {FSUB_CHANNEL_LINK}.\n\nJoin {FSUB_CHANNEL_LINK} and try using the bot again.*"
+                )
+                return
+    
     try:
         link = message_args[1]
         print(link)
