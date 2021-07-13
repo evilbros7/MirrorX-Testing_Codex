@@ -1,4 +1,6 @@
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CommandHandler
+from bot import FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SUDO_USERS, OWNER_ID
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.telegram_helper.message_utils import *
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -9,6 +11,25 @@ from bot import dispatcher
 
 def cloneNode(update,context):
     args = update.message.text.split(" ",maxsplit=1)
+    
+    user_id = update.effective_user.id
+
+    user_is_normal = True
+    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
+        user_is_normal = False
+
+    if user_is_normal:
+        if FSUB_ENABLED is True:
+            member_sub_status = bot.get_chat_member(
+                chat_id=FSUB_CHANNEL_ID,
+                user_id=user_id
+            )
+            if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
+                update.effective_message.reply_markdown(
+                    f"*It seems like you aren't a member of {FSUB_CHANNEL_LINK}.\n\nJoin {FSUB_CHANNEL_LINK} and try using this bot again*"
+                )
+                return
+    
     if len(args) > 1:
         link = args[1]
         msg = sendMessage(f"Cloning: <code>{link}</code>",context.bot,update)
