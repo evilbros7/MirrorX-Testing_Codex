@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CommandHandler
-from bot import FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SUDO_USERS, OWNER_ID
+from bot import FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.telegram_helper.message_utils import *
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -26,7 +26,7 @@ def cloneNode(update,context):
             )
             if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
                 update.effective_message.reply_markdown(
-                    f"*It seems like you aren't a member of {FSUB_CHANNEL_LINK}.\n\nJoin {FSUB_CHANNEL_LINK} and try using this bot again*"
+                    f"*In order to use this bot, you have to be the member of {FSUB_CHANNEL_LINK}.\n\nJoin {FSUB_CHANNEL_LINK} and try using the bot again.*"
                 )
                 return
     
