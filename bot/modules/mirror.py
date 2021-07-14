@@ -218,7 +218,7 @@ def _mirror(bot, update, isTar=False, extract=False):
     user_id = update.effective_user.id
 
     user_is_normal = True
-    if (user_id = OWNER_ID) or (user_id in SUDO_USERS):
+    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
         user_is_normal = False
 
     if user_is_normal:
