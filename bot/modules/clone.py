@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CommandHandler
-from bot import FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK
+from bot import FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SUDO_USERS, OWNER_ID
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.telegram_helper.message_utils import *
 from bot.helper.telegram_helper.filters import CustomFilters
