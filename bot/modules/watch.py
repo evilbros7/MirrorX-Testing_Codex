@@ -1,6 +1,6 @@
 from telegram.ext import CommandHandler
 from telegram import Bot, Update
-from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK
+from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SUDO_USERS, OWNER_ID
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
 from .mirror import MirrorListener
