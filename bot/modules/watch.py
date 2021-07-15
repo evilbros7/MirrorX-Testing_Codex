@@ -1,6 +1,6 @@
 from telegram.ext import CommandHandler
 from telegram import Bot, Update
-from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SUDO_USERS, OWNER_ID
+from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
 from .mirror import MirrorListener
@@ -12,27 +12,6 @@ import threading
 
 def _watch(bot: Bot, update, isTar=False):
     mssg = update.message.text
-    user_id = update.effective_user.id
-    message_args = mssg.split(' ')
-    name_args = mssg.split('|')
-
-    user_is_normal = True
-    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
-        user_is_normal = False
-
-    if user_is_normal:
-        print("Normal User trying to access")
-        if FSUB_ENABLED is True:
-            member_sub_status = bot.get_chat_member(
-                chat_id=FSUB_CHANNEL_ID,
-                user_id=user_id
-            )
-            if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
-                update.effective_message.reply_markdown(
-                    f"*In order to use this bot, you have to be the member of {FSUB_CHANNEL_LINK}.\n\nJoin {FSUB_CHANNEL_LINK} and try using the bot again.*"
-                )
-                return
-            
     message_args = mssg.split(' ')
     name_args = mssg.split('|')
     try:
@@ -47,20 +26,20 @@ def _watch(bot: Bot, update, isTar=False):
         return
     try:
         if "|" in mssg:
-            mssg = mssg.split("|")
-            qual = mssg[0].split(" ")[2]
-            if qual == "":
-                raise IndexError
-        else:
-            qual = message_args[2]
-        if qual != "audio":
-            qual = f'bestvideo[height<={qual}]+bestaudio/best[height<={qual}]'
+        mssg = mssg.split("|")
+        qual = mssg[0].split(" ")[2]
+        if qual == "":
+          raise IndexError
+      else:
+        qual = message_args[2]
+      if qual != "audio":
+        qual = f'bestvideo[height<={qual}]+bestaudio/best[height<={qual}]'
     except IndexError:
-        qual = "bestvideo+bestaudio/best"
+      qual = "bestvideo+bestaudio/best"
     try:
-        name = name_args[1]
+      name = name_args[1]
     except IndexError:
-        name = ""
+      name = ""
     reply_to = update.message.reply_to_message
     if reply_to is not None:
         tag = reply_to.from_user.username
