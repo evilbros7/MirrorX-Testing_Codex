@@ -26,20 +26,20 @@ def _watch(bot: Bot, update, isTar=False):
         return
     try:
         if "|" in mssg:
-        mssg = mssg.split("|")
-        qual = mssg[0].split(" ")[2]
-        if qual == "":
-          raise IndexError
-      else:
-        qual = message_args[2]
-      if qual != "audio":
-        qual = f'bestvideo[height<={qual}]+bestaudio/best[height<={qual}]'
+            mssg = mssg.split("|")
+            qual = mssg[0].split(" ")[2]
+            if qual == "":
+                raise IndexError
+        else:
+            qual = message_args[2]
+        if qual != "audio":
+            qual = f'bestvideo[height<={qual}]+bestaudio/best[height<={qual}]'
     except IndexError:
-      qual = "bestvideo+bestaudio/best"
+        qual = "bestvideo+bestaudio/best"
     try:
-      name = name_args[1]
+        name = name_args[1]
     except IndexError:
-      name = ""
+        name = ""
     reply_to = update.message.reply_to_message
     if reply_to is not None:
         tag = reply_to.from_user.username
