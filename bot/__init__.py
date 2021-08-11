@@ -229,6 +229,15 @@ except KeyError:
     SHORTENER = None
     SHORTENER_API = None
 
+try:
+  LOG_CHNL = getConfig('LOG_CHNL')
+  LOG_UNAME = getConfig('LOG_UNAME')
+  if len(LOG_CHNL) == 0 or len(LOG_UNAME) == 0:
+    raise KeyError
+except KeyError:
+  LOG_CHNL = None
+  LOG_UNAME = None
+
 updater = tg.Updater(token=BOT_TOKEN)
 bot = updater.bot
 dispatcher = updater.dispatcher
