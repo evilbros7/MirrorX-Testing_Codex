@@ -3,10 +3,10 @@ from telegram.ext import CommandHandler
 from telegram import InlineKeyboardMarkup
 
 from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS
-from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API
+from bot import bot, dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API, LOG_UNAME
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval
-from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive
+from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive, PrivateMessage
 from bot.helper.mirror_utils.download_utils.aria2_download import AriaDownloadHelper
 from bot.helper.mirror_utils.download_utils.mega_downloader import MegaDownloadHelper
 from bot.helper.mirror_utils.download_utils.direct_link_generator import direct_link_generator
@@ -188,7 +188,32 @@ class MirrorListener(listeners.MirrorListeners):
                 pass
             del download_dict[self.uid]
             count = len(download_dict)
-        sendMarkup(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
+       #sendMarkup(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
+
+        # Log Channel
+        logmsg = sendLog(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
+
+        # Private Message
+        try:
+            pmmsg = sendPrivate(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
+        except PrivateMessage as e:
+            if "Message" in str(e):
+                prouser = f"<b>You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
+                botstart = f"http://t.me/{bot.username}?start=start"
+                pmb = button_build.ButtonMaker()
+                pmb.buildbutton("Start Bot", f"{botstart}")
+                pmb.buildbutton("Get Your Links", f"{logmsg.link}")
+                sendMarkup(msg + prouser, self.bot, self.update, InlineKeyboardMarkup(pmb.build_menu(2)))
+                return
+  
+        # Group Message
+        fwdpm = f"<b>I've Sent Your Links In Pm</b>"
+        if pmmsg:
+            sendMessage(msg + fwdpm, self.bot, self.update)
+        else:
+            pass
+
+
         if count == 0:
             self.clean()
         else:
