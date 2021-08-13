@@ -1,10 +1,12 @@
 from telegram.ext import CommandHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.telegram_helper.message_utils import *
 from bot.helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.ext_utils.bot_utils import new_thread
-from bot import dispatcher
+from bot.helper.telegram_helper import button_build
+from bot import bot, dispatcher, LOG_UNAME
 
 
 def cloneNode(update,context):
@@ -24,7 +26,25 @@ def cloneNode(update,context):
                 uname = f'<a href="tg://user?id={update.message.from_user.id}">{update.message.from_user.first_name}</a>'
             if uname is not None:
                 cc = f'\n\nReq. By: {uname}'
-            sendMarkup(result + cc, context.bot, update, button)
+            logmsg = sendLog(result + cc, context.bot, update, button)
+
+            try:
+                pmmsg = sendPrivate(result + cc, context.bot, update, button)
+            except PrivateMessage as e:
+            
+                if "Message" in str(e):
+                    prouser = f"<b>You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
+                    botstart = f"http://t.me/{bot.username}?start=start"
+                    pmb = button_build.ButtonMaker()
+                    pmb.buildbutton("Start Bot", f"{botstart}")
+                    pmb.buildbutton("Get Your Links", f"{logmsg.link}")
+                    sendMarkup(result + cc + prouser, context.bot, update, InlineKeyboardMarkup(pmb.build_menu(2)))
+                    return
+
+        if pmmsg:
+            sendMessage(result + cc + fwdpm, context.bot, update)
+        else:
+            pass
     else:
         sendMessage("Provide G-Drive Shareable Link to Clone.",context.bot,update)
 

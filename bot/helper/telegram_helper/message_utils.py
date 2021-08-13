@@ -4,26 +4,46 @@ from telegram.update import Update
 import time
 import psutil
 from bot import AUTO_DELETE_MESSAGE_DURATION, LOGGER, bot, \
-    status_reply_dict, status_reply_dict_lock, download_dict, download_dict_lock
+    status_reply_dict, status_reply_dict_lock, download_dict, download_dict_lock, LOG_CHNL
 from bot.helper.ext_utils.bot_utils import get_readable_message, get_readable_file_size, MirrorStatus
+from bot.helper.ext_utils.exceptions import PrivateMessage
 from telegram.error import TimedOut, BadRequest
 
 def sendMessage(text: str, bot, update: Update):
     try:
         return bot.send_message(update.message.chat_id,
                             reply_to_message_id=update.message.message_id,
-                            text=text, parse_mode='HTMl')
+                            text=text, allow_sending_without_reply=True,  parse_mode='HTMl')
     except Exception as e:
         LOGGER.error(str(e))
 
 
 def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
+    return bot.send_message(update.message.chat_id,
+                            reply_to_message_id=update.message.message_id,
+                            text=text, reply_markup=reply_markup, allow_sending_without_reply=True, parse_mode='HTMl')
+
+
+def sendLog(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
     try:
-        return bot.send_message(update.message.chat_id,
+        return bot.send_message(f"{LOG_CHNL}",
                              reply_to_message_id=update.message.message_id,
-                             text=text, reply_markup=reply_markup, parse_mode='HTMl')
+                             text=text, disable_web_page_preview=True, reply_markup=reply_markup, allow_sending_without_reply=True, parse_mode='HTMl')
     except Exception as e:
         LOGGER.error(str(e))
+
+
+def sendPrivate(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
+   
+    try:
+        return bot.send_message(update.message.from_user.id,
+                             reply_to_message_id=update.message.message_id,
+                             text=text, disable_web_page_preview=True, reply_markup=reply_markup, allow_sending_without_reply=True, parse_mode='HTMl')
+    except Exception as e:
+        LOGGER.error(str(e))
+        if "Forbidden" in str(e):
+            raise PrivateMessage("Bot Can't Send Message In Pm")
+     
 
 
 def editMessage(text: str, message: Message, reply_markup=None):
