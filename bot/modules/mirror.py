@@ -198,7 +198,7 @@ class MirrorListener(listeners.MirrorListeners):
             pmmsg = sendPrivate(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
         except PrivateMessage as e:
             if "Message" in str(e):
-                prouser = f"<b>You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
+                prouser = f"<b> You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
                 botstart = f"http://t.me/{bot.username}?start=start"
                 pmb = button_build.ButtonMaker()
                 pmb.buildbutton("Start Bot", f"{botstart}")
