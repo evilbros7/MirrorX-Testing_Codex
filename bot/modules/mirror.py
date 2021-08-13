@@ -207,7 +207,7 @@ class MirrorListener(listeners.MirrorListeners):
                 return
   
         # Group Message
-        fwdpm = f"<b>I've Sent Your Links In Pm</b>"
+        fwdpm = f"<b> I've Sent Your Links In Pm</b>"
         if pmmsg:
             sendMessage(msg + fwdpm, self.bot, self.update)
         else:
