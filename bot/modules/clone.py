@@ -25,7 +25,7 @@ def cloneNode(update,context):
             else:
                 uname = f'<a href="tg://user?id={update.message.from_user.id}">{update.message.from_user.first_name}</a>'
             if uname is not None:
-                cc = f'\n\nReq. By: {uname}'
+                cc = f'\n\nReq. By: {uname}\n\n'
             logmsg = sendLog(result + cc, context.bot, update, button)
 
             try:
@@ -41,6 +41,7 @@ def cloneNode(update,context):
                     sendMarkup(result + cc + prouser, context.bot, update, InlineKeyboardMarkup(pmb.build_menu(2)))
                     return
 
+        fwdpm = f"<b>I've Sent Your Links In Pm</b>"
         if pmmsg:
             sendMessage(result + cc + fwdpm, context.bot, update)
         else:
