@@ -134,7 +134,18 @@
       "BUTTON_FIVE_URL": {
         "description": "Fill your URL if you are using extra buttons.",
         "required": false
-      }
+      },
+        "LOG_GROUP": {
+        "description": "The Restarting Message Sensing Group.",
+        "required": true
+      },              
+        "LOG_CHNL": {
+        "description": "The Channel Were Uploades Want To Be Sended.",
+        "required": true
+      },
+        "LOG_UNAME": {
+        "description": "The Username Of Channel Were Uploades Want to be Sended.",
+        "required": true
     },
     "addons": [
       {
