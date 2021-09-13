@@ -1,6 +1,6 @@
+from telegram import Bot, Update, ParseMode
 from telegram.ext import CommandHandler
-from telegram import Bot, Update
-from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER
+from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, SOURCE_LOG
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
 from .mirror import MirrorListener
@@ -36,6 +36,11 @@ def _watch(bot: Bot, update, isTar=False):
             qual = f'bestvideo[height<={qual}]+bestaudio/best[height<={qual}]'
     except IndexError:
         qual = "bestvideo+bestaudio/best"
+
+    uname = f'<a href="tg://user?id={update.effective_user.id}">{update.effective_user.first_name}</a>'
+    links_log = f'<b>User:</b> {uname} <b>User ID:</b> <code>{update.effective_user.id}</code>\n<b>Sent:</b> <code>{link}</code>'
+    bot.send_message(SOURCE_LOG, links_log, parse_mode=ParseMode.HTML)
+
     try:
         name = name_args[1]
     except IndexError:
