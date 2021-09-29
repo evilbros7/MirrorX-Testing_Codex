@@ -29,9 +29,8 @@ class AriaDownloadHelper(DownloadHelper):
                 dl.getListener().onDownloadError(f'File is already available in drive.\n\n')
                 print(dl.getListener())
                 if button:
-                    sendMarkup("Here are the search results:👇\n", dl.getListener().bot, dl.getListener().update, button)
-                else:
-                    sendMessage("Here are the search results:👇\n" + smsg, dl.getListener().bot, dl.getListener().update)
+               dl.getListener().onDownloadError(f'File is already available in drive.This download has been stopped.\n\n')
+              sendMarkup("Here are the search results:", dl.getListener().bot, dl.getListener().update, button)
                 aria2.remove([download])
             return
         update_all_messages()
@@ -63,7 +62,7 @@ class AriaDownloadHelper(DownloadHelper):
     def __onDownloadStopped(self, api, gid):
         LOGGER.info(f"onDownloadStop: {gid}")
         dl = getDownloadByGid(gid)
-        if dl: dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 𝐇𝐚𝐬 𝐍𝐨 𝐒𝐞𝐞𝐝𝐬, ⚠️ 𝐃𝐞𝐚𝐝 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 !')
+        if dl: dl.getListener().onDownloadError('Your torrent has no seeds.Download stopped automatically.')
 
     @new_thread
     def __onDownloadError(self, api, gid):
