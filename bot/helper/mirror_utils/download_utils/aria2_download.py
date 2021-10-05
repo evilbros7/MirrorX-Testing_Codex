@@ -29,9 +29,10 @@ class AriaDownloadHelper(DownloadHelper):
                 dl.getListener().onDownloadError(f'File is already available in drive.\n\n')
                 print(dl.getListener())
                 if button:
-               dl.getListener().onDownloadError(f'File is already available in drive.This download has been stopped.\n\n')
-              sendMarkup("Here are the search results:", dl.getListener().bot, dl.getListener().update, button)
-                aria2.remove([download])
+                    sendMarkup("Here are the search results:👇\n", dl.getListener().bot, dl.getListener().update, button)
+                else:
+                    sendMessage("Here are the search results:👇\n" + smsg, dl.getListener().bot, dl.getListener().update)
+                 aria2.remove([download])
             return
         update_all_messages()
 
