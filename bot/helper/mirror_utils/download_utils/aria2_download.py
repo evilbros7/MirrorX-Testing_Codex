@@ -32,7 +32,7 @@ class AriaDownloadHelper(DownloadHelper):
                     sendMarkup("Here are the search results:👇\n", dl.getListener().bot, dl.getListener().update, button)
                 else:
                     sendMessage("Here are the search results:👇\n" + smsg, dl.getListener().bot, dl.getListener().update)
-                 aria2.remove([download])
+                aria2.remove([download])
             return
         update_all_messages()
 
@@ -63,7 +63,7 @@ class AriaDownloadHelper(DownloadHelper):
     def __onDownloadStopped(self, api, gid):
         LOGGER.info(f"onDownloadStop: {gid}")
         dl = getDownloadByGid(gid)
-        if dl: dl.getListener().onDownloadError('Your torrent has no seeds.Download stopped automatically.')
+        if dl: dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 𝐇𝐚𝐬 𝐍𝐨 𝐒𝐞𝐞𝐝𝐬, ⚠️ 𝐃𝐞𝐚𝐝 𝐓𝐨𝐫𝐫𝐞𝐧𝐭 !')
 
     @new_thread
     def __onDownloadError(self, api, gid):
