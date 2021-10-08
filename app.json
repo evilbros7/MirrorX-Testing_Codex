@@ -146,6 +146,7 @@
         "LOG_UNAME": {
         "description": "The Username Of Channel Were Uploades Want to be Sended.",
         "required": true
+      }
     },
     "addons": [
       {
