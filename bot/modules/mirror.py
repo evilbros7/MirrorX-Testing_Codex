@@ -188,6 +188,9 @@ class MirrorListener(listeners.MirrorListeners):
                 pass
             del download_dict[self.uid]
             count = len(download_dict)
+        reply_to = self.message.reply_to_message
+        if reply_to is not None:
+            reply_to.delete()
        #sendMarkup(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
 
         # Log Channel
