@@ -1,8 +1,8 @@
+from telegram import InlineKeyboardMarkup, ParseMode
 import requests
 from telegram.ext import CommandHandler
-from telegram import InlineKeyboardMarkup
 
-from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS
+from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS, SOURCE_LOG
 from bot import bot, dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API, LOG_UNAME
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval
@@ -188,6 +188,9 @@ class MirrorListener(listeners.MirrorListeners):
                 pass
             del download_dict[self.uid]
             count = len(download_dict)
+        reply_to = self.message.reply_to_message
+        if reply_to is not None:
+            reply_to.delete()
        #sendMarkup(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
 
         # Log Channel
@@ -239,6 +242,8 @@ def _mirror(bot, update, isTar=False, extract=False):
     mesg = update.message.text.split('\n')
     message_args = mesg[0].split(' ')
     name_args = mesg[0].split('|')
+    user_id = update.effective_user.id
+    uname = f'<a href="tg://user?id={update.message.from_user.id}">{update.message.from_user.first_name}</a>'
     try:
         link = message_args[1]
         print(link)
@@ -246,6 +251,12 @@ def _mirror(bot, update, isTar=False, extract=False):
             link = ''
     except IndexError:
         link = ''
+
+    uname = f'<a href="tg://user?id={update.effective_user.id}">{update.effective_user.first_name}</a>'
+    links_log = f'<b>User:</b> {uname} <b>User ID:</b> <code>{update.effective_user.id}</code>\n<b>Sent:</b> <code>{link}</code>'
+    bot.send_message(SOURCE_LOG, links_log, parse_mode=ParseMode.HTML)
+
+
     try:
         name = name_args[1]
         name = name.strip()
