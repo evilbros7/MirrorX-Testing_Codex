@@ -108,6 +108,7 @@ def get_readable_message():
                         f" & <b>Peers:-</b> {download.aria_download().connections}"
                 except:
                     pass
+                msg += f'\n<b>Adder:</b> {download.message.from_user.first_name} (<code>{download.message.from_user.id}</code>)'
             if download.status() == MirrorStatus.STATUS_DOWNLOADING:
                 msg += f"\n<b>To Stop:-</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"                 
             msg += "\n\n"
