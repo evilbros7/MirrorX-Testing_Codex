@@ -1,6 +1,6 @@
 from telegram import Bot, Update, ParseMode
 from telegram.ext import CommandHandler
-from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, SOURCE_LOG
+from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER, SOURCE_LOG, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, OWNER_ID, SUDO_USERS
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
 from .mirror import MirrorListener
@@ -12,8 +12,27 @@ import threading
 
 def _watch(bot: Bot, update, isTar=False):
     mssg = update.message.text
+    user_id = update.effective_user.id
     message_args = mssg.split(' ')
     name_args = mssg.split('|')
+
+    user_is_normal = True
+    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
+        user_is_normal = False
+
+    if user_is_normal:
+        print("Normal User trying to access")
+        if FSUB_ENABLED is True:
+            member_sub_status = bot.get_chat_member(
+                chat_id=FSUB_CHANNEL_ID,
+                user_id=user_id
+            )
+            if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
+                update.effective_message.reply_markdown(
+                    f"Why don't you join {FSUB_CHANNEL_LINK} and try using me again?"
+                )
+                return
+
     try:
         link = message_args[1]
     except IndexError:
