@@ -2,8 +2,9 @@ from telegram import InlineKeyboardMarkup, ParseMode
 import requests
 from telegram.ext import CommandHandler
 
-from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS, SOURCE_LOG
+from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_LINKS, FSUB_ENABLED, FSUB_CHANNEL_ID, FSUB_CHANNEL_LINK, SOURCE_LOG
 from bot import bot, dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API, LOG_UNAME
+from bot import SUDO_USERS, OWNER_ID
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive, PrivateMessage
@@ -242,8 +243,31 @@ def _mirror(bot, update, isTar=False, extract=False):
     mesg = update.message.text.split('\n')
     message_args = mesg[0].split(' ')
     name_args = mesg[0].split('|')
+    
     user_id = update.effective_user.id
+    chat_id  = update.effective_chat.id
+    admins = bot.get_chat_member(chat_id, user_id).status in ['creator', 'administrator'] or user_id in [OWNER_ID]
     uname = f'<a href="tg://user?id={update.message.from_user.id}">{update.message.from_user.first_name}</a>'
+    uid = f"{update.message.from_user.id}"
+    chatname = f"{update.message.chat.title}"
+    
+    user_is_normal = True
+    if (user_id == OWNER_ID) or (user_id in SUDO_USERS):
+        user_is_normal = False
+
+    if user_is_normal:
+        print("Normal User trying to access")
+        if FSUB_ENABLED is True:
+            member_sub_status = bot.get_chat_member(
+                chat_id=FSUB_CHANNEL_ID,
+                user_id=user_id
+            )
+            if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
+                update.effective_message.reply_markdown(
+                    f"Why don't you join {FSUB_CHANNEL_LINK} and try using me again?"
+                )
+                return
+
     try:
         link = message_args[1]
         print(link)
@@ -251,11 +275,6 @@ def _mirror(bot, update, isTar=False, extract=False):
             link = ''
     except IndexError:
         link = ''
-
-    uname = f'<a href="tg://user?id={update.effective_user.id}">{update.effective_user.first_name}</a>'
-    links_log = f'<b>User:</b> {uname} <b>User ID:</b> <code>{update.effective_user.id}</code>\n<b>Sent:</b> <code>{link}</code>'
-    bot.send_message(SOURCE_LOG, links_log, parse_mode=ParseMode.HTML)
-
 
     try:
         name = name_args[1]
@@ -289,6 +308,19 @@ def _mirror(bot, update, isTar=False, extract=False):
                 file = i
                 break
 
+
+
+        if not bot_utils.is_url(link) and not bot_utils.is_magnet(link) or len(link) == 0:
+            if reply_to and file is None:
+                link = reply_to.text
+                if link.startswith("BotCommands.MirrorCommand"):
+                    sendMessage(f"Use /{BotCommands.UnzipMirrorCommand} [Magnet/Mega/Direct Links]\nOr use /{BotCommands.UnzipMirrorCommand} in the reply of Telegram File/Torrents to mirror 'em", bot, update)
+                elif link.startswith("BotCommands.TarMirrorCommand"):
+                    sendMessage(f"Use /{BotCommands.TarMirrorCommand} [Drive/Magnet/Mega/Direct Links]\nOr use /{BotCommands.TarMirrorCommand} in the reply of Torrents to archive 'em", bot, update)
+                elif link.startswith("BotCommands.UnzipMirrorCommand"):
+                    sendMessage(f"Use /{BotCommands.UnzipMirrorCommand} [Drive/Magnet/Mega/Direct Links]\nOr use /{BotCommands.UnzipMirrorCommand} in the reply of Telegram File/Torrents to extract 'em", bot, update)
+                    return
+
         if not bot_utils.is_url(link) and not bot_utils.is_magnet(link) or len(link) == 0:
             if file is not None:
                 if file.mime_type != "application/x-bittorrent":
@@ -312,6 +344,15 @@ def _mirror(bot, update, isTar=False, extract=False):
     except DirectDownloadLinkException as e:
         LOGGER.info(f'{link}: {e}')
     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
+
+    if reply_to is not None and file is not None:
+        itext = f"<b>Filename:</b> <code>{file.file_name}</code>\n<b>Size:</b> <code>{get_readable_file_size(file.file_size)}</code>\n\n"
+        itext += f"<b>Sent By:</b> {uname}\n<b>User ID:</b> {uid}\n\n<b>To:</b> @{bot.username}\n<b>In: {chatname}</b>"
+        info_ = copyFile(itext, bot, update)
+        #info = sendInfo(itext, bot, update)
+    else:
+        info = sendInfo(f"<b>User:</b> {uname}\n<b>User ID:</b> <code>{uid}</code>\n<b>Sent:</b> <code>{link}</code>\n\n<b>To:</b> @{bot.username}\n<b>In: {chatname}</b>", bot, update)
+
     if bot_utils.is_gdrive_link(link):
         if not isTar and not extract:
             sendMessage(f"Use /{BotCommands.CloneCommand} To Copy File/Folder", bot, update)
