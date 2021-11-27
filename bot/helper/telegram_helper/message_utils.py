@@ -4,7 +4,7 @@ from telegram.update import Update
 import time
 import psutil
 from bot import AUTO_DELETE_MESSAGE_DURATION, LOGGER, bot, \
-    status_reply_dict, status_reply_dict_lock, download_dict, download_dict_lock, LOG_CHNL
+    status_reply_dict, status_reply_dict_lock, download_dict, download_dict_lock, LOG_CHNL, SOURCE_LOG
 from bot.helper.ext_utils.bot_utils import get_readable_message, get_readable_file_size, MirrorStatus
 from bot.helper.ext_utils.exceptions import PrivateMessage
 from telegram.error import TimedOut, BadRequest
@@ -22,6 +22,28 @@ def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarku
     return bot.send_message(update.message.chat_id,
                             reply_to_message_id=update.message.message_id,
                             text=text, reply_markup=reply_markup, allow_sending_without_reply=True, parse_mode='HTMl')
+
+
+def copyFile(text:str, bot, update: Update):
+    try:
+        bot.copy_message(chat_id=f"{SOURCE_LOG}",
+                         from_chat_id=update.message.chat_id,
+                         caption=text,
+                         message_id=update.message.reply_to_message.message_id, 
+                         parse_mode='HTMl'
+                         )
+        return
+    except Exception as e:
+        LOGGER.error(str(e))
+
+
+def sendInfo(text: str, bot, update: Update):
+    try:
+        return bot.send_message(f"{SOURCE_LOG}",
+                             #reply_to_message_id=update.message.message_id,
+                             text=text, disable_web_page_preview=True, allow_sending_without_reply=True, parse_mode='HTMl')
+    except Exception as e:
+        LOGGER.error(str(e))
 
 
 def sendLog(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
