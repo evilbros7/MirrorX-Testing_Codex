@@ -163,6 +163,15 @@ try:
 except KeyError:
     INDEX_URL = None
 try:
+    FSUB_CHANNEL_ID = getConfig('FSUB_CHANNEL_ID')
+    FSUB_CHANNEL_LINK: str = getConfig('FSUB_CHANNEL_LINK').replace("t.me/", "@")
+    FSUB_CHANNEL_ID = int(FSUB_CHANNEL_ID)
+    FSUB_ENABLED = True
+except KeyError:
+    FSUB_CHANNEL_ID = None
+    FSUB_ENABLED = False
+    FSUB_CHANNEL_LINK = None
+try:
     BUTTON_THREE_NAME = getConfig('BUTTON_THREE_NAME')
     BUTTON_THREE_URL = getConfig('BUTTON_THREE_URL')
     if len(BUTTON_THREE_NAME) == 0 or len(BUTTON_THREE_URL) == 0:
