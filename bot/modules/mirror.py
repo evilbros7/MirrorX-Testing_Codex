@@ -153,13 +153,14 @@ class MirrorListener(listeners.MirrorListeners):
 
     def onUploadComplete(self, link: str, size):
         with download_dict_lock:
-            msg = f'<b>Filename : </b><code>{download_dict[self.uid].name()}</code>\n<b>Size : </b><code>{size}</code>'
+            msg = f'<u>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆</u> <a href="https://t.me/CoursesDrive">📚 Courses Drive 📚</a>\n\n𝗙𝗶𝗹𝗲𝗻𝗮𝗺𝗲🗂 : <code>{download_dict[self.uid].name()}</code>\n𝗦𝗶𝘇𝗲 ⚖️ : <code>{download_dict[self.uid].size()}</code>\n\nOnly Use TeamDrive Link if you have Access.\nDon\'t request access through this link'
+
             buttons = button_build.ButtonMaker()
             if SHORTENER is not None and SHORTENER_API is not None:
                 surl = requests.get(f'https://{SHORTENER}/api?api={SHORTENER_API}&url={link}&format=text').text
-                buttons.buildbutton("💾Drive Link💾", surl)
+                buttons.buildbutton("📚 Course Link 📚", surl)
             else:
-                buttons.buildbutton("💾Drive Link💾", link)
+                buttons.buildbutton("📚 Course Link 📚", link)
             LOGGER.info(f'Done Uploading {download_dict[self.uid].name()}')
             if INDEX_URL is not None:
                 url_path = requests.utils.quote(f'{download_dict[self.uid].name()}')
@@ -182,7 +183,7 @@ class MirrorListener(listeners.MirrorListeners):
             else:
                 uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
             if uname is not None:
-                msg += f'\n\nReq. By 👉 : {uname}\n\n'
+                msg += f'\n\nUploaded By 👉 : {uname}\n\n'
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
             except FileNotFoundError:
@@ -202,7 +203,7 @@ class MirrorListener(listeners.MirrorListeners):
             pmmsg = sendPrivate(msg, self.bot, self.update, InlineKeyboardMarkup(buttons.build_menu(2)))
         except PrivateMessage as e:
             if "Message" in str(e):
-                prouser = f"<b> You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
+                prouser = f"<b> You Haven't Started the Bot In PM for Getting Links\nPlease Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
                 botstart = f"http://t.me/{bot.username}?start=start"
                 pmb = button_build.ButtonMaker()
                 pmb.buildbutton("Start Bot", f"{botstart}")
@@ -211,7 +212,7 @@ class MirrorListener(listeners.MirrorListeners):
                 return
   
         # Group Message
-        fwdpm = f"<b> I've Sent Your Links In Pm</b>"
+        fwdpm = f"<b> Check Your PM For Ur Uploaded Course Link</b>"
         if pmmsg:
             sendMessage(msg + fwdpm, self.bot, self.update)
         else:
@@ -264,7 +265,7 @@ def _mirror(bot, update, isTar=False, extract=False):
             )
             if member_sub_status.status not in ["creator", "administrator", "member", "restricted"]:
                 update.effective_message.reply_markdown(
-                    f"Why don't you join {FSUB_CHANNEL_LINK} and try using me again?"
+                    f"𝗙𝗶𝗿𝘁𝘀𝘁 𝗝𝗼𝗶𝗻 {FSUB_CHANNEL_LINK} 𝗔𝗻𝗱 𝗖𝗼𝗺𝗲 𝗕𝗮𝗰𝗸 𝗔𝗴𝗮𝗶𝗻 𝗨𝘀𝗲 𝗠𝗲"
                 )
                 return
 
