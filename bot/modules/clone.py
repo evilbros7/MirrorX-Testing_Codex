@@ -53,7 +53,7 @@ def cloneNode(update,context):
             except PrivateMessage as e:
             
                 if "Message" in str(e):
-                    prouser = f"<b>You Haven't Started Me In PM for Getting Links\nPlease Go Ahead And Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
+                    prouser = f"<b>You Haven't Started the Bot In PM for Getting Links\nPlease Start Bot In PM\nFor Now Get Links From @{LOG_UNAME}</b>"
                     botstart = f"http://t.me/{bot.username}?start=start"
                     pmb = button_build.ButtonMaker()
                     pmb.buildbutton("Start Bot", f"{botstart}")
@@ -61,7 +61,7 @@ def cloneNode(update,context):
                     sendMarkup(result + cc + prouser, context.bot, update, InlineKeyboardMarkup(pmb.build_menu(2)))
                     return
 
-        fwdpm = f"<b>I've Sent Your Links In Pm</b>"
+        fwdpm = f"<b>Check Your PM For Ur Uploaded Course Link</b>"
         if pmmsg:
             sendMessage(result + cc + fwdpm, context.bot, update)
         else:
